@@ -30,6 +30,27 @@ function App() {
     setNotes(notes.filter(note => note.id !== id));
   };
 
+  const startEditing = (note) => {
+  setEditingId(note.id);
+  setEditTitle(note.title);
+  setEditContent(note.content);
+};
+
+const saveEdit = (id) => {
+  setNotes(
+    notes.map(note =>
+      note.id === id
+        ? { ...note, title: editTitle, content: editContent }
+        : note
+    )
+  );
+  setEditingId(null);
+};
+
+const cancelEdit = () => {
+  setEditingId(null);
+};
+
   return (
     <div className="app-container">
       <h1>Notes App</h1>
@@ -54,10 +75,32 @@ function App() {
       <div className="notes-container">
         {notes.map((note) => (
           <div key={note.id} className="note">
-            <h3>{note.title}</h3>
-            <p>{note.content}</p>
-            <button onClick={() => deleteNote(note.id)}>Delete</button>
-          </div>
+  {editingId === note.id ? (
+    <>
+      <input
+        type="text"
+        value={editTitle}
+        onChange={(e) => setEditTitle(e.target.value)}
+      />
+
+      <textarea
+        value={editContent}
+        onChange={(e) => setEditContent(e.target.value)}
+      />
+
+      <button onClick={() => saveEdit(note.id)}>Save</button>
+      <button onClick={cancelEdit}>Cancel</button>
+    </>
+  ) : (
+    <>
+      <h3>{note.title}</h3>
+      <p>{note.content}</p>
+      <button onClick={() => startEditing(note)}>Edit</button>
+      <button onClick={() => deleteNote(note.id)}>Delete</button>
+    </>
+  )}
+</div>
+
         ))}
       </div>
     </div>
